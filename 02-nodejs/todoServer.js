@@ -41,9 +41,50 @@
  */
 const express = require('express');
 const bodyParser = require('body-parser');
+const port = 3000;
 
 const app = express();
 
 app.use(bodyParser.json());
+
+
+let todos = [{ "id":1,"title": "Buy groceries", "completed": false, description: "I should buy groceries" }];
+
+app.get('/todos', (req, res) => {
+  res.status(200).json(todos);
+})
+
+app.get('/todos/:id', (req, res) => { 
+  const id = req.params.id;
+  let todo = todos.find(todo => todo["id"] == id);
+  console.log(todo);
+
+  if (todo) {
+    res.status(200).json(todo);
+  } else {
+    res.status(404).send();
+  }
+});
+
+app.post('/todos',(req,res) => {
+  const body = req.body;
+  if(todos.findIndex(todo => todo.id === req.body.id) < 0){
+    todos.push(body);
+    res.status(201);
+  }
+  res.send(todos);
+  
+});
+
+// app.delete('/rodos/:id', (req,res)=>{
+//   const id = req.params.id;
+
+//   if()
+// })
+
+
+app.listen(port, () => {
+  console.log(`Server running at http://localhost:${port}/`);
+});
 
 module.exports = app;
