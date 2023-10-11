@@ -52,12 +52,12 @@ let todos = [];
 
 app.get('/todos', (req, res) => {
   res.status(200).json(todos); 
+
 })
 
 app.get('/todos/:id', (req, res) => { 
   const id = req.params.id;
   let todo = todos.find(todo => todo["id"] == id);
-
   if (todo) {
     res.status(200).json(todo);
   } else {
