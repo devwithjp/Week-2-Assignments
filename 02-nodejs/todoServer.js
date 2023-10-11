@@ -41,9 +41,76 @@
  */
 const express = require('express');
 const bodyParser = require('body-parser');
+const port = 3000;
 
 const app = express();
 
 app.use(bodyParser.json());
+
+
+let todos = [];
+
+app.get('/todos', (req, res) => {
+  res.status(200).json(todos); 
+})
+
+app.get('/todos/:id', (req, res) => { 
+  const id = req.params.id;
+  let todo = todos.find(todo => todo["id"] == id);
+
+  if (todo) {
+    res.status(200).json(todo);
+  } else {
+    res.status(404).send();
+  }
+});
+
+app.post('/todos',(req,res) => {
+  const body = req.body;
+  const id = todos.length + 1;
+  const todo = {id: id, ...body}
+  todos.push(todo);
+  res.status(201).send(todo);
+  
+});
+
+
+
+app.delete('/todos/:id',  (req,res)=>{
+  const id = req.params.id;
+  if(todos.findIndex(todo => todo.id == id) > -1){
+    const todosNew =  todos.filter(todo => todo.id != id);
+    todos = [...todosNew]
+    res.status(200).send(todos);  
+  }
+    
+  else{
+    res.status(404).send();
+  }
+  
+
+})
+
+app.put('/todos/:id', (req, res) => { 
+  const id = req.params.id;
+  let todoIndex = todos.findIndex(todo => todo["id"] == id);
+  if (todoIndex >= 0) {
+    console.log(todoIndex)
+    const updatedTodo = {id:id, ...req.body}
+    todos.splice(todoIndex,1, updatedTodo);
+    res.status(200).send(todos);
+  } else {
+    res.status(404).send();
+  }
+})
+
+app.get('*', function(req, res){
+  res.status(404).send('what???');
+});
+
+
+// app.listen(port, () => {
+//   console.log(`Server running at http://localhost:${port}/`);
+// });
 
 module.exports = app;
