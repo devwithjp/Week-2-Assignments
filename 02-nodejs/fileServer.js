@@ -21,5 +21,35 @@ const fs = require('fs');
 const path = require('path');
 const app = express();
 
+app.get('/files', (req, resp) => {
+  const directoryPath = path.join(__dirname, 'files');
+  fs.readdir(directoryPath, function (err, files) {
+      if (err) {
+        resp.status(500).send(new Error('Mocked Internal Server Error')) ;
+      }
+      else{
+        resp.status(200).send(files);
+      } 
+  });
+}
+)
+
+app.get('/file/:filename', (req, resp)=> {  
+  console.log(req.params.filename);
+  fs.readFile(__dirname+ '/files/'+ req.params.filename, 'utf8', (err, data) => {
+    if (err) {
+      resp.status(404).send('File not found');
+    }
+    else{
+      resp.status(200).send(data)
+
+    }
+  });
+})
+
+app.get('*', function(req, res){
+  res.status(404).send('Route not found');
+});
+// app.listen(3000, ()=> console.log("SERVER RUNNING ON 3000"))
 
 module.exports = app;
